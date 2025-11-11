@@ -10,7 +10,7 @@ variable "knowledge_base_description" {
 
 variable "aurora_arn" {
   description = "The ARN of the Aurora database"
-  type = string
+  type        = string
 }
 
 variable "aurora_db_name" {
@@ -38,27 +38,33 @@ variable "aurora_secret_arn" {
   type        = string
 }
 
-variable "aurora_verctor_field" {
+variable "aurora_vector_field" {
   description = "The column name for the vector values"
-  type = string  
+  type        = string
 }
 
 variable "aurora_text_field" {
   description = "The column name for the text values"
-  type = string
+  type        = string
 }
 
 variable "aurora_metadata_field" {
   description = "The column name for the metadata values"
-  type = string
+  type        = string
 }
 
 variable "aurora_primary_key_field" {
   description = "The column name for the primary key field"
-  type = string
+  type        = string
 }
 
 variable "s3_bucket_arn" {
   description = "The ARN for the S3 bucket where the data is"
-  type = string
+  type        = string
 }
+
+variable "role_arn" {
+  description = "IAM role ARN for Bedrock Knowledge Base"
+  type        = string
+}
+
