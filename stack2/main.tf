@@ -11,7 +11,8 @@ resource "aws_iam_role_policy" "bedrock_kb_rds_access" {
           "rds:DescribeDBClusters",
           "rds:DescribeDBInstances",
           "rds:DescribeDBSubnetGroups",
-          "secretsmanager:GetSecretValue"
+          "secretsmanager:GetSecretValue",
+           "rds-data:ExecuteStatement"
         ],
         Resource = "*"
       }
