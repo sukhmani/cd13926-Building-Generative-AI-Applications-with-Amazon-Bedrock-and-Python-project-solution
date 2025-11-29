@@ -8,22 +8,59 @@ REGION = "us-west-2"
 bedrock = boto3.client("bedrock-runtime", region_name=REGION)
 bedrock_kb = boto3.client("bedrock-agent-runtime", region_name=REGION)
 
-def valid_prompt(prompt: str) -> bool:
+def valid_prompt(prompt: str, model_id: str = "anthropic.claude-3-haiku-20240307") -> bool:
     """
-    to chk if a prompt is about heavy machinery.
+    Validate prompt
+    """
 
-    """
     if not prompt or not prompt.strip():
         return False
 
+
     p = prompt.lower()
 
+    # Expanded keyword list
     keywords = [
         "machine", "machinery", "heavy machinery", "excavator", "bulldozer",
         "hydraulic", "engine", "crane", "loader", "gearbox", "transmission",
-        "lift", "drill", "compressor", "industrial"
+        "lift", "drill", "compressor", "industrial", "truck", "dump truck",
+        "payload", "capacity", "specs", "specifications"
     ]
+
+
+    try:
+        validation_prompt = (
+            f"Determine if the following user prompt is about heavy machinery. "
+            f"Answer only 'YES' or 'NO'.\n\nPrompt: {prompt}"
+        )
+
+        resp = bedrock.invoke_model(
+            modelId=model_id,
+            contentType="application/json",
+            accept="application/json",
+            body=json.dumps({
+                "anthropic_version": "bedrock-2023-05-31",
+                "messages": [{"role": "user", "content": [{"type": "text", "text": validation_prompt}]}],
+                "max_tokens": 10,
+                "temperature": 0.0,
+                "top_p": 1.0
+            })
+        )
+
+        body = resp["body"].read()
+        parsed = json.loads(body)
+        answer = parsed.get("content", [{}])[0].get("text", "").strip().upper()
+
+        if answer.startswith("YES"):
+            return True
+
+    except Exception as e:
+        print("Semantic validation failed:", e)
+
+    # Fallback to keyword filter
     return any(k in p for k in keywords)
+
+
 
 def query_knowledge_base(query: str, kb_id: str, num_results: int = 3):
     """
